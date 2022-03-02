@@ -1,20 +1,7 @@
 from telegram import Update, ReplyKeyboardMarkup, replykeyboardremove
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext
-from openpyexcel import load_workbook
-from key import TOKEN
-
-
-bd = load_workbook('data_base.xlsx')
-
-stikers_page = bd['stikers']
-
-stikers = {}
-
-for row in range(2, stikers_page.max_row + 1):
-    keyword = stikers_page.cell(row=row, column=1).value
-    stikers_id = stikers_page.cell(row=row, column=2).value
-    stikers[keyword] = stikers_id
-    print(stikers)
+from teg_bot.key import TOKEN
+from teg_bot.connect_to_database import stikers
 
 
 def main():
