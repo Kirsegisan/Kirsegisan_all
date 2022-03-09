@@ -18,6 +18,9 @@ def main():
 
     hello_handler = MessageHandler(Filters.text('Hello, hello'), say_hello)
 
+    bye_handler = MessageHandler(Filters.text('Goodbye, goodbye'), say_bye)
+
+    dispatcher.add_handler(bye_handler)
     dispatcher.add_handler(hello_handler)
     dispatcher.add_handler(hello_keybord)
     dispatcher.add_handler(echo_handler)
@@ -25,6 +28,12 @@ def main():
     updater.start_polling()
     print('successful launch')
     updater.idle()
+
+
+def faund_stikers(text):
+    for stiker in stikers:
+        if stiker in text.lower():
+            return stikers[stiker]
 
 
 def echo(update: Update, context: CallbackContext) -> None:
@@ -38,6 +47,13 @@ def echo(update: Update, context: CallbackContext) -> None:
 def say_hello(update: Update, context: CallbackContext):
     name = update.message.from_user.first_name
     update.message.reply_text(f"Hello, {name}. I'm bot, friend")
+
+
+def say_bye(update: Update, context: CallbackContext):
+    name = update.message.from_user.first_name
+    text = update.message.text
+    update.message.reply_text(f"Goodbye, {name}.")
+    update.message.reply_sticker(faund_stikers(text))
 
 
 def keybord(update: Update, context: CallbackContext):
