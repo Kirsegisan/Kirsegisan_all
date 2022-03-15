@@ -1,7 +1,7 @@
 from telegram import Update, ReplyKeyboardMarkup, replykeyboardremove
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext
 from teg_bot.key import TOKEN
-from teg_bot.connect_to_database import stikers
+from teg_bot.connect_to_database import stickers, inserd_sticker
 
 
 def main():
@@ -31,9 +31,9 @@ def main():
 
 
 def faund_stikers(text):
-    for stiker in stikers:
+    for stiker in stickers:
         if stiker in text.lower():
-            return stikers[stiker]
+            return stickers[stiker]
 
 
 def echo(update: Update, context: CallbackContext) -> None:
@@ -58,7 +58,7 @@ def say_bye(update: Update, context: CallbackContext):
 
 def keybord(update: Update, context: CallbackContext):
     buttons = [
-        ['1', '2', '3'],
+        ['1', '2', 'new sticker'],
         ['hello', 'goodbye']
     ]
     update.message.reply_text(
@@ -69,6 +69,11 @@ def keybord(update: Update, context: CallbackContext):
         )
 
     )
+
+
+def inserd_sticker(update: Update, context: CallbackContext):
+    pass
+
 
 
 if __name__ == '__main__':
