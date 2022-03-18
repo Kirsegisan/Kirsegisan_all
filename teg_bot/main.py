@@ -71,8 +71,26 @@ def keybord(update: Update, context: CallbackContext):
     )
 
 
-def inserd_sticker(update: Update, context: CallbackContext):
-    pass
+def new_sticker(update: Update, context: CallbackContext):
+    sticker_id = update.message.sticker.file_id
+    for keyword in stickers:
+        if sticker_id == stickers[keyword]:
+            update.message.reply_text('I have this to')
+            update.message.reply_stickers(sticker_id)
+            break
+    else:
+        context.user_data['new_sticker'] = sticker_id
+        update.message.reply_text("I haven't this")
+
+
+def new_keyword(update: Update, context: CallbackContext):
+    if 'new_sticker' not in context.user_data:
+        bye_handler(update, context)
+    else:
+        keyword = update.message.text
+        sticker_id = context.user_data['new_sticker']
+        inserd_sticker(keyword, sticker_id)
+        context.user_data.clear
 
 
 
