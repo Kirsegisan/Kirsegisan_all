@@ -85,7 +85,7 @@ def new_sticker(update: Update, context: CallbackContext):
 
 def new_keyword(update: Update, context: CallbackContext):
     if 'new_sticker' not in context.user_data:
-        bye_handler(update, context)
+        say_bye(update, context)
     else:
         keyword = update.message.text
         sticker_id = context.user_data['new_sticker']
