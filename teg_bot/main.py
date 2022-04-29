@@ -1,7 +1,10 @@
 from telegram import Update, ReplyKeyboardMarkup, replykeyboardremove
-from telegram.ext import Updater, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, ConversationHandler
 from teg_bot.key import TOKEN
 from teg_bot.connect_to_database import stickers, inserd_sticker
+
+
+WAIT_NAME, WAIT_SEX, WAIT_GRADE = range(3)
 
 
 def main():
@@ -20,6 +23,15 @@ def main():
 
     bye_handler = MessageHandler(Filters.text('Goodbye, goodbye'), say_bye)
 
+    meet_handler = ConversationHandler(
+        entry_points=[MessageHandler(Filters.text("Привет"), meet)],
+        states={
+            WAIT_NAME: [MessageHandler(Filters.text, ask_sex)],
+            WAIT_SEX: [MessageHandler(Filters.text, ask_grade)],
+            WAIT_GRADE: [MessageHandler(Filters.text, greet)]
+        }
+    )
+
     dispatcher.add_handler(bye_handler)
     dispatcher.add_handler(hello_handler)
     dispatcher.add_handler(hello_keybord)
@@ -30,10 +42,13 @@ def main():
     updater.idle()
 
 
-def faund_stikers(text):
-    for stiker in stickers:
-        if stiker in text.lower():
-            return stickers[stiker]
+
+
+
+def found_stickers(text):
+    for sticker in stickers:
+        if sticker in text.lower():
+            return stickers[sticker]
 
 
 def echo(update: Update, context: CallbackContext) -> None:
@@ -53,7 +68,7 @@ def say_bye(update: Update, context: CallbackContext):
     name = update.message.from_user.first_name
     text = update.message.text
     update.message.reply_text(f"Goodbye, {name}.")
-    update.message.reply_sticker(faund_stikers(text))
+    update.message.reply_sticker(found_stickers(text))
 
 
 def keybord(update: Update, context: CallbackContext):
@@ -90,9 +105,117 @@ def new_keyword(update: Update, context: CallbackContext):
         keyword = update.message.text
         sticker_id = context.user_data['new_sticker']
         inserd_sticker(keyword, sticker_id)
-        context.user_data.clear
+        context.user_data.clear()
 
 
+def meet(update: Update, context: CallbackContext):
+    """
+    имя
+    пол
+    класс
+    id юзера
 
+    """
+    user_id = update.message.from_user.id
+    if in_database(user_id):
+        pass  # выход из диолога
+    ask_name(update, context)
+
+
+def ask_name(update: Update, context: CallbackContext):
+    """
+    имя?
+    TODO проверить имя пользователя в телеге
+    """
+    update.message.reply_text(
+        "Вас нет в базе\n"
+        "Войдите в базу!\n"
+        "Введите свое имя"
+    )
+    return WAIT_NAME
+
+
+def ask_sex(update: Update, context: CallbackContext):
+    """
+    пол?
+    """
+    name = update.message.text
+    if not name_is_vaklid(name):
+        update.message.reply_text(
+            "Вас нет в базе\n"
+            "Войдите в базу!\n"
+            "Введите свое имя"
+        )
+        return WAIT_NAME
+    context.user_data["name"] = name
+    buttons = [
+        ["М", "Ж"]
+    ]
+    keys = ReplyKeyboardMarkup(
+        buttons,
+        resize_keyboard=True
+    )
+    reply_text = f"Введите свой пол"
+    update.message.reply_text(
+        reply_text,
+        reply_markup=keys
+    )
+
+
+def ask_grade(update: Update, context: CallbackContext):
+    """
+    класс?
+    """
+    sex = update.message.text
+    context.user_data["sex"] = sex
+    buttons = [
+        ["1-8", "9-11"]
+    ]
+    keys = ReplyKeyboardMarkup(
+        buttons,
+        resize_keyboard=True
+    )
+    reply_text = f"Введите свой класс"
+    update.message.reply_text(
+        reply_text,
+        reply_markup=keys
+    )
+
+
+def greet(update: Update, context: CallbackContext):
+    """
+    записывает в БД
+        user_id(сообщение)
+        name(контекст)
+        sex((контекст)
+        grade(из пред. сооб.)
+    """
+    grade = update.message.text
+    name = context.user_data["name"]
+    sex = context.user_data["sex"]
+    user_id = update.message.from_user.id
+
+    insert_user(user_id, name, sex, grade)
+    update.message.reply_text(
+        f'Новая запись в БД\n'
+        f'{user_id=}\n'
+        f'{name=}\n'
+        f'{sex=}\n'
+        f'{grade=}\n'
+    )
+
+
+def name_is_vaklid(name: str) -> bool:
+    return name.isalpha()
+
+
+def sex_is_vaklid(sex: str) -> bool:
+    return True
+    
+
+def grade_is_vaklid(grade: str) -> bool:
+    return True
+
+            
 if __name__ == '__main__':
     main()
