@@ -13,9 +13,21 @@ def inserd_sticker(keyword, sticker_id=None, reply_text=None):
 
 bd = load_workbook('data_base.xlsx')
 stickers_page = bd['stickers']
+users_page = bd['users_page']
 
 stickers = {}
 replies = {}
+
+
+def in_database(user: int) -> bool:
+    """
+    123
+    """
+    for row in range(2, users_page.max_row + 1):
+        if user == users_page.cell(row=row, column=1).value:
+            return True
+    return False
+
 
 for row in range(1, stickers_page.max_row + 1):
     keyword = stickers_page.cell(row=row, column=1).value
