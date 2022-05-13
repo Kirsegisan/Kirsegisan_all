@@ -4,9 +4,8 @@ from openpyxl import load_workbook
 def inserd_user(*args):
     row = users_page.max_row + 1
     users_page.cell(row=row, column=1).value = args[0]
-    users_page.cell(row=row, column=1).value = args[1]
-    users_page.cell(row=row, column=1).value = args[2]
-    users_page.cell(row=row, column=1).value = args[3]
+    users_page.cell(row=row, column=2).value = args[1]
+    users_page.cell(row=row, column=3).value = args[2]
     bd.save('data_base.xlsx')
 
 

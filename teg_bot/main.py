@@ -25,6 +25,8 @@ def main():
 
     bye_handler = MessageHandler(Filters.text('Goodbye, goodbye'), say_bye)
 
+    stickers_hendler = MessageHandler(Filters.sticker, new_sticker)
+
     meet_handler = ConversationHandler(
         entry_points=[MessageHandler(Filters.text('Hello, hello'), meet)],
         states={
@@ -36,8 +38,9 @@ def main():
     )
 
     dispatcher.add_handler(meet_handler)
-    dispatcher.add_handler(bye_handler)
+    dispatcher.add_handler(stickers_hendler)
     dispatcher.add_handler(hello_handler)
+    dispatcher.add_handler(bye_handler)
     dispatcher.add_handler(hello_keybord)
     dispatcher.add_handler(echo_handler)
 
@@ -97,6 +100,8 @@ def new_sticker(update: Update, context: CallbackContext):
             update.message.reply_text('I have this to')
             update.message.reply_stickers(sticker_id)
             break
+        print(stickers[keyword])
+        print(sticker_id)
     else:
         context.user_data['new_sticker'] = sticker_id
         update.message.reply_text("I haven't this")
@@ -217,6 +222,7 @@ def greet(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
 
     inserd_user(user_id, name, sex, grade)
+
     update.message.reply_text(
         f"now you're in database\n"
         f'{user_id=}\n'
