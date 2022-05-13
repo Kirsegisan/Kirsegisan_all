@@ -1,6 +1,15 @@
 from openpyxl import load_workbook
 
 
+def inserd_user(*args):
+    row = users_page.max_row + 1
+    users_page.cell(row=row, column=1).value = args[0]
+    users_page.cell(row=row, column=1).value = args[1]
+    users_page.cell(row=row, column=1).value = args[2]
+    users_page.cell(row=row, column=1).value = args[3]
+    bd.save('data_base.xlsx')
+
+
 def inserd_sticker(keyword, sticker_id=None, reply_text=None):
     row = stickers_page.max_row + 1
     stickers_page.cell(row=row, column=1).value = keyword

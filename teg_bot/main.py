@@ -1,11 +1,13 @@
 from telegram import Update, ReplyKeyboardMarkup, replykeyboardremove
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, ConversationHandler
 from teg_bot.key import TOKEN
-from teg_bot.connect_to_database import stickers, inserd_sticker
+from teg_bot.connect_to_database import stickers, inserd_sticker, in_database, inserd_user
 
 
 WAIT_NAME, WAIT_SEX, WAIT_GRADE = range(3)
-
+buttons_grade = [
+        ["1", "2", "3", "4", "5", "6", "7", "8", "9", '10', '11' ]
+    ]
 
 def main():
 
@@ -24,14 +26,16 @@ def main():
     bye_handler = MessageHandler(Filters.text('Goodbye, goodbye'), say_bye)
 
     meet_handler = ConversationHandler(
-        entry_points=[MessageHandler(Filters.text("Привет"), meet)],
+        entry_points=[MessageHandler(Filters.text('Hello, hello'), meet)],
         states={
             WAIT_NAME: [MessageHandler(Filters.text, ask_sex)],
             WAIT_SEX: [MessageHandler(Filters.text, ask_grade)],
             WAIT_GRADE: [MessageHandler(Filters.text, greet)]
-        }
+        },
+        fallbacks=[]
     )
 
+    dispatcher.add_handler(meet_handler)
     dispatcher.add_handler(bye_handler)
     dispatcher.add_handler(hello_handler)
     dispatcher.add_handler(hello_keybord)
@@ -110,16 +114,20 @@ def new_keyword(update: Update, context: CallbackContext):
 
 def meet(update: Update, context: CallbackContext):
     """
-    имя
-    пол
-    класс
-    id юзера
+    Name
+    sex
+    Grade
+    id user
 
     """
     user_id = update.message.from_user.id
     if in_database(user_id):
-        pass  # выход из диолога
-    ask_name(update, context)
+        update.message.reply_text(
+            'welcome back'
+            #reply_markup=ReplyKeyboardRemove()
+        )
+        return ConversationHandler.END
+    return ask_name(update, context)
 
 
 def ask_name(update: Update, context: CallbackContext):
@@ -128,9 +136,9 @@ def ask_name(update: Update, context: CallbackContext):
     TODO проверить имя пользователя в телеге
     """
     update.message.reply_text(
-        "Вас нет в базе\n"
-        "Войдите в базу!\n"
-        "Введите свое имя"
+        "Who are you?\n"
+        "you're not in database!\n"
+        "What's your name?"
     )
     return WAIT_NAME
 
@@ -142,24 +150,26 @@ def ask_sex(update: Update, context: CallbackContext):
     name = update.message.text
     if not name_is_vaklid(name):
         update.message.reply_text(
-            "Вас нет в базе\n"
-            "Войдите в базу!\n"
-            "Введите свое имя"
+            "Who are you?\n"
+            "you're not in db!\n"
+            "What's your name?\n"
+            "!!!name has onle letters!!!"
         )
         return WAIT_NAME
     context.user_data["name"] = name
-    buttons = [
-        ["М", "Ж"]
+    buttons_sex = [
+        ["M", "W"]
     ]
     keys = ReplyKeyboardMarkup(
-        buttons,
+        buttons_sex,
         resize_keyboard=True
     )
-    reply_text = f"Введите свой пол"
+    reply_text = f"What gender are you?"
     update.message.reply_text(
         reply_text,
         reply_markup=keys
     )
+    return WAIT_SEX
 
 
 def ask_grade(update: Update, context: CallbackContext):
@@ -167,19 +177,24 @@ def ask_grade(update: Update, context: CallbackContext):
     класс?
     """
     sex = update.message.text
+    if not sex_is_vaklid(sex):
+        update.message.reply_text(
+            "What gender are you?\n"
+            '!!! M or W!!!'
+        )
+        return WAIT_SEX
+
     context.user_data["sex"] = sex
-    buttons = [
-        ["1-8", "9-11"]
-    ]
     keys = ReplyKeyboardMarkup(
-        buttons,
+        buttons_grade,
         resize_keyboard=True
     )
-    reply_text = f"Введите свой класс"
+    reply_text = f"What grade are you in?"
     update.message.reply_text(
         reply_text,
         reply_markup=keys
     )
+    return WAIT_GRADE
 
 
 def greet(update: Update, context: CallbackContext):
@@ -191,18 +206,25 @@ def greet(update: Update, context: CallbackContext):
         grade(из пред. сооб.)
     """
     grade = update.message.text
+    if not grade_is_vaklid(grade):
+        update.message.reply_text(
+            '!!! it not really !!!\n'
+            "What grade are you in?"
+        )
+        return WAIT_GRADE
     name = context.user_data["name"]
     sex = context.user_data["sex"]
     user_id = update.message.from_user.id
 
-    insert_user(user_id, name, sex, grade)
+    inserd_user(user_id, name, sex, grade)
     update.message.reply_text(
-        f'Новая запись в БД\n'
+        f"now you're in database\n"
         f'{user_id=}\n'
         f'{name=}\n'
         f'{sex=}\n'
         f'{grade=}\n'
     )
+    return ConversationHandler.END
 
 
 def name_is_vaklid(name: str) -> bool:
@@ -210,11 +232,11 @@ def name_is_vaklid(name: str) -> bool:
 
 
 def sex_is_vaklid(sex: str) -> bool:
-    return True
+    return sex == 'M' or sex == "W"
     
 
 def grade_is_vaklid(grade: str) -> bool:
-    return True
+    return grade in ["1", "2", "3", "4", "5", "6", "7", "8", "9", '10', '11' ]
 
             
 if __name__ == '__main__':
