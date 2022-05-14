@@ -108,7 +108,7 @@ def new_sticker(update: Update, context: CallbackContext):
     else:
         context.user_data['new_sticker'] = sticker_id
         update.message.reply_text("I haven't this\n"
-                                  'give me the kyeword for this sticer')
+                                  'give me the kyeword for this sticker')
 
 
 def new_keyword(update: Update, context: CallbackContext):
