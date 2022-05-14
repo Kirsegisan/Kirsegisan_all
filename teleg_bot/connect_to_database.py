@@ -9,7 +9,7 @@ def inserd_user(*args):
     bd.save('data_base.xlsx')
 
 
-def inserd_sticker(keyword, sticker_id=None, reply_text=None):
+def inserd_sticker(keyword, sticker_id=None, reply_text=None, ):
     row = stickers_page.max_row + 1
     stickers_page.cell(row=row, column=1).value = keyword
     stickers_page.cell(row=row, column=2).value = sticker_id
@@ -19,12 +19,14 @@ def inserd_sticker(keyword, sticker_id=None, reply_text=None):
     replies[keyword] = reply_text
 
 
+
 bd = load_workbook('data_base.xlsx')
 stickers_page = bd['stickers']
 users_page = bd['users_page']
 
 stickers = {}
 replies = {}
+
 
 
 def in_database(user: int) -> bool:
@@ -39,10 +41,11 @@ def in_database(user: int) -> bool:
 
 for row in range(1, stickers_page.max_row + 1):
     keyword = stickers_page.cell(row=row, column=1).value
-    sticker_id = stickers_page.cell(row=row, column=2).value
+    sticker_unique_id = stickers_page.cell(row=row, column=2).value
     reply_text = stickers_page.cell(row=row, column=3).value
-    stickers[keyword] = sticker_id
+    stickers[keyword] = sticker_unique_id
     replies[keyword] = reply_text
+
 
 if __name__ == '__main__':
     print(stickers)

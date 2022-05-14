@@ -55,10 +55,10 @@ def main():
 
 
 
-def found_stickers(text):
-    for sticker in stickers:
-        if sticker in text.lower():
-            return stickers[sticker]
+#def found_stickers(text):
+#    for sticker in stickers:
+#        if sticker in text.lower():
+#            return stickers[sticker]
 
 
 def echo(update: Update, context: CallbackContext) -> None:
@@ -78,7 +78,6 @@ def say_bye(update: Update, context: CallbackContext):
     name = update.message.from_user.first_name
     text = update.message.text
     update.message.reply_text(f"Goodbye, {name}.")
-    update.message.reply_sticker(found_stickers(text))
 
 
 def keybord(update: Update, context: CallbackContext):
@@ -97,15 +96,15 @@ def keybord(update: Update, context: CallbackContext):
 
 def new_sticker(update: Update, context: CallbackContext):
     sticker_id = update.message.sticker.file_id
-    for keyword in stickers:
-        if sticker_id == stickers[keyword]:
+    sticker_unique_id = update.message.sticker.file_unique_id
+    for stickers_unique_id in stickers:
+        if sticker_unique_id == stickers[stickers_unique_id]:
             update.message.reply_text('I have this to')
-            update.message.reply_stickers(sticker_id)
+            update.message.reply_sticker(sticker_id)
             break
-        print(stickers[keyword])
-        print(sticker_id)
+
     else:
-        context.user_data['new_sticker'] = sticker_id
+        context.user_data['new_sticker'] = sticker_unique_id
         update.message.reply_text("I haven't this\n"
                                   'give me the kyeword for this sticker')
 
