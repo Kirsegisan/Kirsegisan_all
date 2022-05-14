@@ -27,6 +27,8 @@ def main():
 
     stickers_hendler = MessageHandler(Filters.sticker, new_sticker)
 
+    keyword_hendler = MessageHandler(Filters.text, new_keyword)
+
     meet_handler = ConversationHandler(
         entry_points=[MessageHandler(Filters.text('Hello, hello'), meet)],
         states={
@@ -42,6 +44,7 @@ def main():
     dispatcher.add_handler(hello_handler)
     dispatcher.add_handler(bye_handler)
     dispatcher.add_handler(hello_keybord)
+    dispatcher.add_handler(keyword_hendler)
     dispatcher.add_handler(echo_handler)
 
     updater.start_polling()
@@ -104,17 +107,19 @@ def new_sticker(update: Update, context: CallbackContext):
         print(sticker_id)
     else:
         context.user_data['new_sticker'] = sticker_id
-        update.message.reply_text("I haven't this")
+        update.message.reply_text("I haven't this\n"
+                                  'give me the kyeword for this sticer')
 
 
 def new_keyword(update: Update, context: CallbackContext):
     if 'new_sticker' not in context.user_data:
-        say_bye(update, context)
+        echo(update, context)
     else:
         keyword = update.message.text
         sticker_id = context.user_data['new_sticker']
         inserd_sticker(keyword, sticker_id)
         context.user_data.clear()
+        update.message.reply_text('thanks')
 
 
 def meet(update: Update, context: CallbackContext):
