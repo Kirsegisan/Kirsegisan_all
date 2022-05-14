@@ -6,7 +6,7 @@ from teleg_bot.connect_to_database import stickers, inserd_sticker, in_database,
 
 WAIT_NAME, WAIT_SEX, WAIT_GRADE = range(3)
 buttons_grade = [
-        ["1", "2", "3", "4", "5", "6", "7", "8", "9", '10', '11' ]
+        ["1", "2", "3", "4", "5", "6", "7", "8", "9", '10', '11']
     ]
 
 def main():
