@@ -83,7 +83,6 @@ def say_bye(update: Update, context: CallbackContext):
 
 def keybord(update: Update, context: CallbackContext):
     buttons = [
-        ['1', '2', 'new sticker'],
         ['hello', 'goodbye']
     ]
     update.message.reply_text(
