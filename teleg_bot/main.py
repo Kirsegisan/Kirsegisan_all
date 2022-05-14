@@ -1,7 +1,7 @@
 from telegram import Update, ReplyKeyboardMarkup, replykeyboardremove
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, ConversationHandler
-from teg_bot.key import TOKEN
-from teg_bot.connect_to_database import stickers, inserd_sticker, in_database, inserd_user
+from teleg_bot.key import TOKEN
+from teleg_bot.connect_to_database import stickers, inserd_sticker, in_database, inserd_user
 
 
 WAIT_NAME, WAIT_SEX, WAIT_GRADE = range(3)
